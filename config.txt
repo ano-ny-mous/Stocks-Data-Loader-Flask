@@ -1,0 +1,5 @@
+IBM
+AMD
+NVDA
+TSLA
+AAPL
