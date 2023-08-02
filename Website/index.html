@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Data Application</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f8ff;
+    }
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+    form {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+    label {
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+    input[type="text"] {
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        border: none;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    input[type="submit"] {
+        padding: 10px 20px;
+        cursor: pointer;
+        background-color: #4CAF50; /* Green */
+        border-radius: 5px;
+        color: white;
+    }
+    input[type="submit"]:hover {
+      background-color:#45a049; /* Darker green */
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+    }
+    th, td {
+        text-align:left; 
+        padding:8px; 
+    }
+    th {
+      background-color:#4CAF50; /* Green */
+      color:white; 
+    }
+    tr:nth-child(even) {background-color:#f2f2f2;}
+</style>
+
+</head>
+<body>
+    <div class="container">
+        <h1>Stock Data Web Application</h1>
+		
+		<form id="configForm" onsubmit="submitConfigForm(event)">
+    <label for="action">Add or remove a company ticker:</label>
+    <select id="action" name="action">
+        <option value="add">Add</option>
+        <option value="remove">Remove</option>
+    </select>
+    <input type="text" id="ticker" name="ticker" placeholder="Enter company ticker">
+    <input type="submit" value="Submit">
+</form>
+
+
+        <form id="companyForm" onsubmit="submitCompanyForm(event)">
+            <label for="company">Get all stock data for a particular company(Ticker):</label>
+            <input type="text" id="company" name="company" placeholder="Enter company name">
+            <input type="submit" value="Submit">
+        </form>
+
+        <form id="companyDateForm" onsubmit="submitCompanyDateForm(event)">
+            <label for="company">Get all stock data for a particular company for a particular day:</label>
+            <input type="text" id="companyDateCompany" name="company" placeholder="Enter company name">
+            <input type="text" id="companyDateDate" name="date" placeholder="Enter date (YYYY-MM-DD)">
+            <input type="submit" value="Submit">
+        </form>
+
+        <form id="dateForm" onsubmit="submitDateForm(event)">
+            <label for="date">Get all companies stock data for a particular day:</label>
+            <input type="text" id="date" name="date" placeholder="Enter date (YYYY-MM-DD)">
+            <input type="submit" value="Submit">
+        </form>
+
+        <form id="updateForm" onsubmit="submitUpdateForm(event)">
+          <label for="">Update stock data for a company by date:</label>
+          <input type of "text" id ="updateCompany" name ="company" placeholder ="Enter company name">
+          <input type of "text" id ="updateDate" name ="date" placeholder ="Enter date (YYYY-MM-DD)">
+          <input type of "text" id ="updateOpenPrice" name ="open_price" placeholder ="Enter open price">
+          <input type of "text" id ="updateHighPrice" name ="high_price" placeholder ="Enter high price">
+          <input type of "text" id ="updateLowPrice" name ="low_price" placeholder ="Enter low price">
+          <input type of "text" id ="updateClosePrice" name ="close_price" placeholder ="Enter close price">
+          <input type of "text" id ="updateAdjClosePrice" name ="adj_close_price" placeholder ="Enter adj close price">
+          <input type of "text"id = "updateVolume"name = "volume"
+placeholder = "Enter volume">
+          <input type="submit"value = "Submit">
+      </form>
+
+      <table id = "data-table">
+      <tr>
+      <th>Company</th>
+      <th>Date</th>
+      <th>Open</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Close</th>
+      <th>Adj Close</th>
+      <th>Volume</th>
+      </tr>
+      <!-- Table data will be inserted here -->
+      </table>
+    </div>
+	
+
+    <!-- Add your JavaScript code here -->
+    <!-- You can use the fetch API to make requests to your server -->
+    <!-- and update the table with the response data -->
+    <!-- See https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch -->
+
+    <!-- Example code for submitting the first form and updating the table with the response data -->
+	<script>
+	
+	async function submitConfigForm(event) {
+    event.preventDefault();
+    const action = document.getElementById('action').value;
+    const ticker = document.getElementById('ticker').value;
+
+    // Update config on server
+    await fetch(`http://127.0.0.1:5000/config_update/${action}/${ticker}`);
+}
+
+	
+    async function submitCompanyForm(event) {
+      event.preventDefault();
+      const company = document.getElementById('company').value;
+
+      // Fetch data from server
+      const response = await fetch(`http://127.0.0.1:5000/stocks_of/${company}`);
+      const data = await response.json();
+
+      // Clear previous data from table
+      const dataTable = document.getElementById('data-table');
+      while (dataTable.rows.length > 1) {
+          dataTable.deleteRow(1);
+      }
+
+      // Insert new data into table
+      for (let i = 0; i < data.length; i++) {
+          const row = data[i];
+          const tr = document.createElement('tr');
+          for (let j = 0; j < row.length; j++) {
+              const td = document.createElement('td');
+              td.textContent = row[j];
+              tr.appendChild(td);
+          }
+          dataTable.appendChild(tr);
+      }
+    }
+
+    async function submitCompanyDateForm(event) {
+        event.preventDefault();
+        const company = document.getElementById('companyDateCompany').value;
+        const date = document.getElementById('companyDateDate').value;
+
+        // Fetch data from server
+        const response = await fetch(`http://127.0.0.1:5000/stocks_of_on/${company}/${date}`);
+        const data = await response.json();
+
+        // Clear previous data from table
+        const dataTable = document.getElementById('data-table');
+        while (dataTable.rows.length > 1) {
+            dataTable.deleteRow(1);
+        }
+
+        // Insert new data into table
+        for (let i = 0; i < data.length; i++) {
+            const row = data[i];
+            const tr = document.createElement('tr');
+            for (let j = 0; j < row.length; j++) {
+                const td = document.createElement('td');
+                td.textContent = row[j];
+                tr.appendChild(td);
+            }
+            dataTable.appendChild(tr);
+        }
+    }
+
+    async function submitDateForm(event) {
+        event.preventDefault();
+        const date = document.getElementById('date').value;
+
+        // Fetch data from server
+        const response = await fetch(`http://127.0.0.1:5000/stocks_on/${date}`);
+        const data = await response.json();
+
+        // Clear previous data from table
+        const dataTable = document.getElementById('data-table');
+        while (dataTable.rows.length > 1) {
+            dataTable.deleteRow(1);
+        }
+
+        // Insert new data into table
+        for (let i = 0; i < data.length; i++) {
+            const row = data[i];
+            const tr = document.createElement('tr');
+            for (let j = 0; j < row.length; j++) {
+                const td = document.createElement('td');
+                td.textContent = row[j];
+                tr.appendChild(td);
+            }
+            dataTable.appendChild(tr);
+        }
+    }
+
+    async function submitUpdateForm(event) {
+      event.preventDefault();
+      const company = document.getElementById('updateCompany').value;
+      const date = document.getElementById('updateDate').value;
+      const openPrice = document.getElementById('updateOpenPrice').value;
+      const highPrice = document.getElementById('updateHighPrice').value;
+      const lowPrice = document.getElementById('updateLowPrice').value;
+      const closePrice = document.getElementById('updateClosePrice').value;
+      const adjClosePrice= document.getElementById('updateAdjClosePrice').value;
+      const volume= document.getElementById('updateVolume').value;
+
+      // Update data on server
+      await fetch(`http://127.0.0.1:5000/stocks_update/${company}/${date}`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              open_price: openPrice,
+              high_price: highPrice,
+              low_price: lowPrice,
+              close_price: closePrice,
+              adj_close: adjClosePrice,
+              volume: volume
+          })
+      });
+    }
+</script>
+</body>
+</html>
