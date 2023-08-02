@@ -1,8 +1,10 @@
 import yfinance as yf
 import sqlite3
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 
 def download_finance_data(company):  # downloading data by company name
