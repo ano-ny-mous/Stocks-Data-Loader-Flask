@@ -30,6 +30,11 @@ def load_data_to_db(company, data, db_path):  # loding data into database
     c.execute('''CREATE TABLE IF NOT EXISTS finance_data (company text, date text, open real, high real, low real, 
     close real, adj_close real, volume integer,PRIMARY KEY (company, date))''')
     for index, row in data.iterrows():
+        open_price = round(row['Open'], 4)
+        high_price = round(row['High'], 4)
+        low_price = round(row['Low'], 4)
+        close_price = round(row['Close'], 4)
+        adj_close_price = round(row['Adj Close'], 4)
         c.execute("INSERT OR REPLACE INTO finance_data VALUES (?,?, ?, ?, ?, ?, ?, ?)", (
             company, index.strftime('%Y-%m-%d'), row['Open'], row['High'], row['Low'], row['Close'], row['Adj Close'],
             row['Volume']))
