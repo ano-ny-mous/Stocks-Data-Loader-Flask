@@ -6,6 +6,18 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+def update_config(action, ticker):
+    with open('config.txt', 'r') as f:
+        tickers = f.read().splitlines()
+    if action == 'add':
+        if ticker not in tickers:
+            tickers.append(ticker)
+    elif action == 'remove':
+        if ticker in tickers:
+            tickers.remove(ticker)
+    with open('config.txt', 'w') as f:
+        f.write('\n'.join(tickers))
+
 
 def download_finance_data(company):  # downloading data by company name
     data = yf.download(company, period="max")
