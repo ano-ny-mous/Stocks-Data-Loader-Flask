@@ -94,7 +94,10 @@ def update_company_stock_data(company, date):
     conn.commit()
     conn.close()
     return "success"
-
+    
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 def main():
     # opening config.txt in read mode
